@@ -1,0 +1,359 @@
+﻿@page
+@model IEnumerable<Historico>
+
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Adivinhação</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evSXbVzTVFTJwFqCqFyqACgbtFxv/zWLxhVAYDhiXhq1P0aZ846LKn5eCYeHcQf" crossorigin="anonymous">
+
+    <style>
+
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #212121;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        h1, h2 {
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        #dificuldade {
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #212121;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .historico a {
+            text-decoration: underline;
+        }
+
+        a:hover {
+            cursor: pointer;
+        }
+
+        .btn-group {
+            justify-content: center;
+        }
+
+        #mensagens, #historico, #estatisticas {
+            margin-top: 20px;
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .list-group-item {
+            padding: 10px 15px;
+            background-color: #212121;
+            border: 1px solid #424242;
+        }
+
+        #estatisticas li {
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .btn-success {
+            background: linear-gradient(to right, #4caf50, #8bc34a);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(to right, #ff9800, #ffb74d);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background: linear-gradient(to right, #f44336, #e91e63);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        #jogador-adivinha button.btn-primary {
+            background-color: #1976D2;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 16px;
+            font-size: 14px;
+        }
+
+            #jogador-adivinha button.btn-primary:hover {
+                background-color: #1565C0;
+                transform: scale(1.05);
+            }
+
+        .container {
+            background-image: url("path/to/your/background_image.jpg");
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div style="text-align: center;">
+            <h1>Jogo de Adivinhação</h1>
+        </div>
+
+        <p>Descubra o número secreto entre 1 e 100!</p>
+
+        <div id="dificuldade">
+            <label for="dificuldade">Selecione a dificuldade para iniciar o jogo:</label>
+            <br>
+            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <button type="button" id="BtnFacil" class="btn btn-success mr-2" onclick="iniciarJogoComDificuldade('Facil')">Fácil</button>
+                <button type="button" id="BtnMedio" class="btn btn-warning mr-2" onclick="iniciarJogoComDificuldade('Medio')">Médio</button>
+                <button type="button" id="BtnDificil" class="btn btn-danger" onclick="iniciarJogoComDificuldade('Dificil')">Difícil</button>
+            </div>
+        </div>
+        <br>
+        <div id="jogo">
+            <form id="jogador-adivinha" onsubmit="return false;">
+                <label for="numero-jogador">Digite seu palpite:</label>
+                <input type="number" id="numero-jogador" name="numero-jogador" min="1" max="100" required>
+                <button type="submit" id="BtnTentar" class="btn btn-primary" onclick="ComecaJogo()">Tentar</button>
+            </form>
+
+            <div id="mensagens">
+            </div>
+
+            <div id="historico">
+                <h2>Histórico de Tentativas</h2>
+                <ul class="list-unstyled"></ul>
+            </div>
+        </div>
+
+        <div id="estatisticas">
+            <h2>Estatísticas</h2>
+            <ul class="list-unstyled">
+                <li>Vitórias: <span id="vitorias"></span></li>
+                <li>Derrotas: <span id="derrotas"></span></li>
+                <li>Aproveitamento: <span id="aproveitamento"></span>%</li>
+                <li>Rank: <span id="rank"></span></li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/Nae365dCE5MrXyNwtT3U3Xjn5x3j8W8niiVFO" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $.ajax({
+            url: "../Jogo/CarregarHistorico",
+            method: "GET",
+            success: function (data) {
+                for (var i = 0; i < data.length; i++) {
+                    var resultado = data[i].resultado;
+                    var cor = resultado === "sucesso" ? "green" : "red";
+                    var itemHistorico = "<li ><a href='../Jogo/DetalhesHistorico?data=" + data[i].tentativa + "&jogador=" + data[i].coD_JOGADOR + "&resultado=" + data[i].resultado + "&num=" + data[i].nuM_TENTATIVA + "' style='color: " + cor + "!important'>" + resultado + "</a></li>";
+                    $("#historico ul").append(itemHistorico);
+                }
+            },
+        });
+
+        $.ajax({
+            url: "../Jogo/CarregarEstatistica",
+            method: "GET",
+            success: function (data) {
+                $("#vitorias").text(data.vitoria);
+                $("#derrotas").text(data.derrota);
+                $("#aproveitamento").text(data.aproveitamento.toFixed(2));
+                $("#rank").text(data.rank);
+            },
+        });
+    })
+
+    var numeroSecreto;
+    var tipoJogador;
+    var tentativasRestantes;
+    var contador = 1;
+
+    $("#BtnTentar").attr("disabled", true);
+
+
+    function iniciarJogoComDificuldade(dificuldade) {
+        $.ajax({
+            url: "../Jogo/IniciarJogo?dif=" + dificuldade,
+            method: "GET",
+            success: function (data) {
+                numeroSecreto = data.num;
+                tipoJogador = data.tipoJogador;
+                tentativasRestantes = 0;
+
+                $("#BtnFacil").attr("disabled", true);
+                $("#BtnMedio").attr("disabled", true);
+                $("#BtnDificil").attr("disabled", true);
+
+                if (dificuldade === "Facil") {
+                    tentativasRestantes = 7;
+                } else if (dificuldade === "Medio") {
+                    tentativasRestantes = 5;
+                } else if (dificuldade === "Dificil") {
+                    tentativasRestantes = 3;
+                }
+                contador = 1;
+                $("#BtnTentar").attr("disabled", false);
+                if (tipoJogador === 0) {
+                    alert("Comece chutanto um número! Você tem " + tentativasRestantes + " tentativas!");
+                }
+                else {
+                    alert("Pense em um número! A máquina tem " + tentativasRestantes + " tentativas!");
+                    ComecaJogo();
+                }
+            },
+        });
+    }
+
+    function ComecaJogo() {
+        var num = numeroSecreto;
+        var tipo = tipoJogador;
+        var tentativas = tentativasRestantes;
+        var Historico = {
+            COD_JOGADOR: null,
+            NUM_TENTATIVA: null,
+            Tentativa: null,
+            RESULTADO: null
+        }
+        if (tipo === 0) {
+            
+            while (contador <= tentativasRestantes) {
+                var chuteNumero = obterNumeroDoForm();
+
+                if (isNaN(chuteNumero) || chuteNumero < 1 || chuteNumero > 100) {
+                    alert("Chute inválido. Digite um número entre 1 e 100.");
+                    break;
+                }
+
+                if (chuteNumero === num) {
+                    alert("Parabéns! Você acertou o número secreto em " + (contador) + " tentativas!");
+                    $("#BtnFacil").attr("disabled", false);
+                    $("#BtnMedio").attr("disabled", false);
+                    $("#BtnDificil").attr("disabled", false);
+                    $("#BtnTentar").attr("disabled", true);
+                    Historico.COD_JOGADOR = 1;
+                    Historico.NUM_TENTATIVA = contador;
+                    Historico.RESULTADO = "sucesso";
+                    SalvarHistorico(Historico);
+                    break;
+                } else {
+                    if (contador <= tentativas) {
+                        if (contador == tentativas){
+                            alert("Você perdeu! Suas tentativas acabaram! O número secreto era " + num + ".");
+                            $("#BtnFacil").attr("disabled", false);
+                            $("#BtnMedio").attr("disabled", false);
+                            $("#BtnDificil").attr("disabled", false);
+                            $("#BtnTentar").attr("disabled", true);
+                            Historico.COD_JOGADOR = 1;
+                            Historico.NUM_TENTATIVA = contador;
+                            Historico.RESULTADO = "perdeu";
+                            SalvarHistorico(Historico);
+                            break;
+                        }
+                        alert("Você errou! Tente novamente. Você tem " + (tentativas - contador) + " tentativas restantes.");
+                        contador++;
+                        break;
+                    } 
+                }
+
+            }
+        } else {
+            var numeroAleatorio = gerarNumeroAleatorio();
+            while (contador <= tentativasRestantes) {
+                var resposta = prompt("A máquina chutou o número: " + numeroAleatorio + "\n\nA máquina acertou? Digite Sim ou Nao:");
+                var respostaMinuscula = resposta.toLowerCase();
+
+                if (respostaMinuscula == "sim") {
+                    alert("A máquina acertou seu número em: " + (contador) + " tentativas!");
+                    $("#BtnFacil").attr("disabled", false);
+                    $("#BtnMedio").attr("disabled", false);
+                    $("#BtnDificil").attr("disabled", false);
+                    $("#BtnTentar").attr("disabled", true);
+                    Historico.COD_JOGADOR = 2;
+                    Historico.NUM_TENTATIVA = contador;
+                    Historico.RESULTADO = "sucesso";
+                    SalvarHistorico(Historico);
+                    break;
+                }
+                else {
+                    if (contador == tentativas) {
+                        alert("A máquina não conseguiu acertar seu número! Acabou as tentativas!");
+                        $("#BtnFacil").attr("disabled", false);
+                        $("#BtnMedio").attr("disabled", false);
+                        $("#BtnDificil").attr("disabled", false);
+                        $("#BtnTentar").attr("disabled", true);
+                        Historico.COD_JOGADOR = 2;
+                        Historico.NUM_TENTATIVA = contador;
+                        Historico.RESULTADO = "perdeu";
+                        SalvarHistorico(Historico);
+                        break;
+                    }
+                    else {
+                        contador++;
+                        ComecaJogo();
+                        break;
+                    }
+                    
+                }
+            }
+        }
+    }
+
+    function gerarNumeroAleatorio() {
+        return Math.floor(Math.random() * (100 - 1 + 1)) + 1;
+    }
+
+    function obterNumeroDoForm() {
+        var numeroStr = $("#numero-jogador").val();
+        return parseInt(numeroStr);
+    }
+
+    function SalvarHistorico(Historico) {
+        $.ajax({
+            url: "../Jogo/NovoHistorico",
+            method: "POST",
+            data: Historico,
+            success: function (data) {
+                window.location.href = "../Jogo/Index";
+            },
+        });
+    }
+
+</script>

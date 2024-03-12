@@ -1,0 +1,205 @@
+﻿@page
+@model Historico
+
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Adivinhação</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evSXbVzTVFTJwFqCqFyqACgbtFxv/zWLxhVAYDhiXhq1P0aZ846LKn5eCYeHcQf" crossorigin="anonymous">
+
+    <style>
+
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #121212;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #212121;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        h1, h2 {
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        #dificuldade {
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #212121;
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        #historico ul li span {
+            color: #fff; 
+        }
+
+        #historico ul li {
+            color: #fff;
+        }
+
+        #jogador {
+            margin-left: 10px;
+        }
+
+        #num {
+            margin-left: 10px;
+        }
+
+        #data {
+            margin-left: 10px;
+        }
+
+        a:hover {
+            cursor: pointer;
+        }
+
+        .btn-group {
+            justify-content: center;
+        }
+
+        #mensagens, #historico, #estatisticas {
+            margin-top: 20px;
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .list-group-item {
+            padding: 10px 15px;
+            background-color: #212121;
+            border: 1px solid #424242;
+        }
+
+        #estatisticas li {
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .btn-success {
+            background: linear-gradient(to right, #4caf50, #8bc34a);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-warning {
+            background: linear-gradient(to right, #ff9800, #ffb74d);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background: linear-gradient(to right, #f44336, #e91e63);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        #jogador-adivinha button.btn-primary {
+            background-color: #1976D2;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 16px;
+            font-size: 14px;
+        }
+
+            #jogador-adivinha button.btn-primary:hover {
+                background-color: #1565C0;
+                transform: scale(1.05);
+            }
+
+        .container {
+            background-image: url("path/to/your/background_image.jpg");
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div style="text-align: center;">
+            <h1>Jogo de Adivinhação</h1>
+        </div>
+        <div id="historico">
+            <h2>Histórico Detalhado</h2>
+            <ul class="list-unstyled">
+                <li><strong>Jogador:</strong><span id="jogador"></span></li>
+                <li><strong>Número de Tentativas:</strong> <span id="num"></span></li>
+                <li><strong>Horário da Tentativa:</strong> <span id="data"></span></li>
+            </ul>
+        </div>
+
+        <button type="submit" id="BtnVoltar" class="btn btn-primary" onclick="Voltar()">Voltar</button>
+    </div>
+</body>
+
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/Nae365dCE5MrXyNwtT3U3Xjn5x3j8W8niiVFO" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var urlParams = new URLSearchParams(window.location.search);
+
+        var Historico = {
+            COD_JOGADOR: urlParams.get('jogador'),
+            NUM_TENTATIVA: urlParams.get('num'),
+            Tentativa: urlParams.get('data'),
+            RESULTADO: urlParams.get('resultado')
+        };
+
+        $.ajax({
+            url: "../Jogo/HistoricoDetalhado",
+            method: "GET",
+            data: Historico,
+            success: function (data) {
+                if(data.coD_JOGADOR === 1) {
+                    $("#jogador").text("Jogador");
+
+                }
+                else {
+                    $("#jogador").text("Máquina");
+                }
+                $("#num").text(data.nuM_TENTATIVA);
+                var dataFormatada = new Date(data.tentativa).toLocaleDateString("pt-BR", {
+                    hour: "numeric",
+                    minute: "numeric",
+                });
+
+                $("#data").text(dataFormatada);
+                var resultado = data.resultado;
+                var cor = resultado === "sucesso" ? "green" : "red";
+                var itemHistorico = "<li><strong>Resultado:</strong> <span style='color: " + cor + "'>" + resultado + "</span></li>";
+                $("#historico ul").append(itemHistorico);
+            },
+        });
+    })
+
+    function Voltar() {
+        window.location.href = "../Jogo/Index";
+    }
+</script>
